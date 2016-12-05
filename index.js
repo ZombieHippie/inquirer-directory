@@ -183,8 +183,18 @@ Prompt.prototype.render = function() {
  */
 Prompt.prototype.handleSubmit = function (e) {
   var self = this;
-  var obx = e.map(function () {
-    return self.opt.choices.getChoice( self.selected ).value;
+
+  var validate = runAsync(this.opt.validate);
+  var filter = runAsync(this.opt.filter);
+  var validation = e.flatMap(function () {
+    return filter(self.opt.choices.getChoice( self.selected ).value)
+      .then(function (filteredValue) {
+      return validate(filteredValue, self.answers).then(function (isValid) {
+        return {isValid: isValid, value: filteredValue};
+      });
+    }, function (err) {
+      return {isValid: err};
+    });
   }).share();
 
   var done = obx.filter(function (choice) {
