@@ -7,6 +7,7 @@ var util = require("util");
 var chalk = require("chalk");
 var figures = require("figures");
 var cliCursor = require("cli-cursor");
+var runAsync = require('run-async');
 var Base = require("inquirer/lib/prompts/base");
 var observe = require("inquirer/lib/utils/events");
 var Paginator = require("inquirer/lib/utils/paginator");
