@@ -193,7 +193,7 @@ Prompt.prototype.render = function() {
   if ( this.status === "answered" ) {
     message += chalk.cyan( path.relative(this.opt.basePath, this.currentPath) );
   } else {
-    message += chalk.bold("\nDirectory: ") + this.opt.basePath + "/" + chalk.cyan(path.relative(this.opt.basePath, this.currentPath));
+    message += chalk.bold("\nDirectory: ") + (path.relative(this.opt.cwd, this.opt.basePath) || '.') + "/" + chalk.cyan(path.relative(this.opt.basePath, this.currentPath));
     var choicesStr = listRender(this.opt.choices, this.selected );
     message += "\n" + this.paginator.paginate(choicesStr, this.selected, this.opt.pageSize);
   }
