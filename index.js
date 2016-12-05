@@ -48,10 +48,7 @@ function Prompt() {
   this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
 
   var relativeStartPath = path.relative(this.currentPath, this.opt.basePath);
-  console.log("relativeStartPath", relativeStartPath)
   this.depth = (relativeStartPath.match(/\.\.[\/\\]?/g) || { length: 0 }).length;
-
-  console.log("depth", this.depth)
 
   if (/[^\.\\\/]/.test(relativeStartPath)) {
     throw new Error('basePath must contain startPath');
