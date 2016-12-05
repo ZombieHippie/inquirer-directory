@@ -330,13 +330,14 @@ function findIndex (term) {
  * Helper to create new choices based on previous selection.
  */
 Prompt.prototype.createChoices = function (basePath) {
+  var fullPath = path.resolve(this.opt.cwd, basePath)
   var choices = []
   if (this.depth > 0) {
     choices.push(BACK);
   }
   choices.push(CHOOSE);
-  var directoryChoices = getDirectories(basePath);
-  var files = getFiles(basePath);
+  var directoryChoices = getDirectories(fullPath);
+  var files = getFiles(fullPath);
   if (files.length + directoryChoices.length > 0) {
     choices.push(new Separator());
   }
@@ -387,7 +388,7 @@ Prompt.prototype.createChoices = function (basePath) {
  */
 function getDirectories(basePath) {
   return fs
-    .readdirSync(path.resolve(this.opt.cwd, basePath))
+    .readdirSync(basePath)
     .filter(function(file) {
       var stats = fs.lstatSync(path.join(basePath, file));
       if (stats.isSymbolicLink()) {
@@ -401,7 +402,7 @@ function getDirectories(basePath) {
 }
 function getFiles(basePath) {
   return fs
-    .readdirSync(path.resolve(this.opt.cwd, basePath))
+    .readdirSync(basePath)
     .filter(function(file) {
       var stats = fs.lstatSync(path.join(basePath, file));
       if (stats.isSymbolicLink()) {
