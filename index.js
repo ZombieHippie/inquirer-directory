@@ -46,7 +46,7 @@ function Prompt() {
   this.depth = 0;
   this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
   
-  var relativeStartPath = path.relative(this.currentPath, this.basePath);
+  var relativeStartPath = path.relative(this.currentPath, this.opt.basePath);
   this.depth = (relativeStartPath.match(/\.\.\//g) || {length: 0}).length;
   
   if (/[^\.\\\/]/.test(relativeStartPath)) {
