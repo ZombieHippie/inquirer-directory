@@ -39,23 +39,24 @@ function Prompt() {
   if (!this.opt.basePath) {
     this.throwParamError("basePath");
   }
-  
+
   if (!this.opt.startPath) {
     this.opt.startPath = this.opt.basePath
   }
 
   this.depth = 0;
   this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
-  
+
   var relativeStartPath = path.relative(this.currentPath, this.opt.basePath);
-  this.depth = (relativeStartPath.match(/\.\.\//g) || {length: 0}).length;
-  
+  console.log("relativeStartPath", relativeStartPath)
+  this.depth = (relativeStartPath.match(/\.\.[\/\\]?/g) || { length: 0 }).length;
+
   console.log("depth", this.depth)
-  
+
   if (/[^\.\\\/]/.test(relativeStartPath)) {
     throw new Error('basePath must contain startPath');
   }
-  
+
   this.opt.choices = new Choices(this.createChoices(this.currentPath), this.answers);
   this.selected = 0;
 
@@ -187,17 +188,8 @@ Prompt.prototype.render = function() {
 Prompt.prototype.handleSubmit = function (e) {
   var self = this;
 
-  var validate = runAsync(this.opt.validate);
-  var filter = runAsync(this.opt.filter);
-  var obx = e.flatMap(function () {
-    return filter(self.opt.choices.getChoice( self.selected ).value)
-      .then(function (filteredValue) {
-      return validate(filteredValue, self.answers).then(function (isValid) {
-        return {isValid: isValid, value: filteredValue};
-      });
-    }, function (err) {
-      return {isValid: err};
-    });
+  var obx = e.map(function () {
+    return self.opt.choices.getChoice( self.selected ).value;
   }).share();
 
   var done = obx.filter(function (choice) {
@@ -311,14 +303,13 @@ Prompt.prototype.createChoices = function (basePath) {
   var choices = []
   choices.push(CHOOSE);
   if (this.depth > 0) {
-    choices.push(new Separator());
     choices.push(BACK);
-    choices.push(new Separator());
   }
   var directoryChoices = getDirectories(basePath);
   if (directoryChoices.length > 0) {
     choices.push(new Separator());
     choices = choices.concat(directoryChoices);
+    choices.push(new Separator());
   }
 
   return choices;
