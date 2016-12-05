@@ -38,9 +38,13 @@ function Prompt() {
   if (!this.opt.basePath) {
     this.throwParamError("basePath");
   }
+  
+  if (!this.opt.startPath) {
+    this.opt.startPath = this.opt.basePath
+  }
 
   this.depth = 0;
-  this.currentPath = path.isAbsolute(this.opt.basePath) ? path.resolve(this.opt.basePath) : path.resolve(process.cwd(), this.opt.basePath);
+  this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
   this.opt.choices = new Choices(this.createChoices(this.currentPath), this.answers);
   this.selected = 0;
 
