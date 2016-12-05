@@ -305,16 +305,19 @@ function findIndex (term) {
  * Helper to create new choices based on previous selection.
  */
 Prompt.prototype.createChoices = function (basePath) {
+  var choices = []
   choices.push(CHOOSE);
   if (this.depth > 0) {
     choices.push(new Separator());
     choices.push(BACK);
     choices.push(new Separator());
   }
-  var choices = getDirectories(basePath);
-  if (choices.length > 0) {
+  var directoryChoices = getDirectories(basePath);
+  if (directoryChoices.length > 0) {
     choices.push(new Separator());
+    choices = choices.concat(directoryChoices);
   }
+
   return choices;
 };
 
