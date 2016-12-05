@@ -40,12 +40,16 @@ function Prompt() {
     this.throwParamError("basePath");
   }
 
+  if (!this.opt.cwd) {
+    this.opt.cwd = process.cwd()
+  }
+
   if (!this.opt.startPath) {
     this.opt.startPath = this.opt.basePath
   }
 
   this.depth = 0;
-  this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
+  this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(this.opt.cwd, this.opt.startPath);
 
   var relativeStartPath = path.relative(this.currentPath, this.opt.basePath);
   this.depth = (relativeStartPath.match(/\.\.[\/\\]?/g) || { length: 0 }).length;
@@ -383,7 +387,7 @@ Prompt.prototype.createChoices = function (basePath) {
  */
 function getDirectories(basePath) {
   return fs
-    .readdirSync(basePath)
+    .readdirSync(path.resolve(this.opt.cwd, basePath))
     .filter(function(file) {
       var stats = fs.lstatSync(path.join(basePath, file));
       if (stats.isSymbolicLink()) {
@@ -397,7 +401,7 @@ function getDirectories(basePath) {
 }
 function getFiles(basePath) {
   return fs
-    .readdirSync(basePath)
+    .readdirSync(path.resolve(this.opt.cwd, basePath))
     .filter(function(file) {
       var stats = fs.lstatSync(path.join(basePath, file));
       if (stats.isSymbolicLink()) {
