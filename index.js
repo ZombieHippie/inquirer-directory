@@ -187,7 +187,7 @@ Prompt.prototype.handleSubmit = function (e) {
 
   var validate = runAsync(this.opt.validate);
   var filter = runAsync(this.opt.filter);
-  var validation = e.flatMap(function () {
+  var obx = e.flatMap(function () {
     return filter(self.opt.choices.getChoice( self.selected ).value)
       .then(function (filteredValue) {
       return validate(filteredValue, self.answers).then(function (isValid) {
