@@ -26,7 +26,7 @@ module.exports = Prompt;
 /**
  * Constants
  */
-var CHOOSE = ".";
+var CHOOSE = "<this directory>";
 var BACK = "..";
 
 /**
@@ -49,6 +49,8 @@ function Prompt() {
   
   var relativeStartPath = path.relative(this.currentPath, this.opt.basePath);
   this.depth = (relativeStartPath.match(/\.\.\//g) || {length: 0}).length;
+  
+  console.log("depth", this.depth)
   
   if (/[^\.\\\/]/.test(relativeStartPath)) {
     throw new Error('basePath must contain startPath');
