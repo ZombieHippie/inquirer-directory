@@ -26,8 +26,8 @@ module.exports = Prompt;
 /**
  * Constants
  */
-var CHOOSE = "<this directory>";
-var BACK = "..";
+var CHOOSE = chalk.cyan("Choose directory here");
+var BACK = chalk.bold.blue("..");
 
 /**
  * Constructor
@@ -59,6 +59,9 @@ function Prompt() {
 
   this.opt.choices = new Choices(this.createChoices(this.currentPath), this.answers);
   this.selected = 0;
+  if (this.depth > 0) {
+    this.selected = 1;
+  }
 
   this.firstRender = true;
 
@@ -68,6 +71,29 @@ function Prompt() {
   this.searchTerm = '';
 
   this.paginator = new Paginator();
+
+  this.paginator.paginate = function (output, active, pageSize) {
+    pageSize = pageSize || 7;
+    var lines = output.split('\n');
+
+    // Make sure there's enough lines to paginate
+    if (lines.length <= pageSize + 2) {
+      return output;
+    }
+
+    // Move the pointer only when the user go down and limit it to 3
+    if (this.pointer < 3 && this.lastIndex < active && active - this.lastIndex < 9) {
+      this.pointer = Math.min(3, this.pointer + active - this.lastIndex);
+    }
+    this.lastIndex = active;
+
+    // Duplicate the lines so it give an infinite list look
+    var infinite = _.flatten([lines, lines, lines]);
+    var topIndex = Math.max(0, active - this.pointer);
+
+    var section = infinite.splice(topIndex, pageSize).join('\n');
+    return section + '\n' + chalk.dim('(Move up and down to reveal more choices)');
+  };
 }
 util.inherits( Prompt, Base );
 
@@ -166,7 +192,7 @@ Prompt.prototype.render = function() {
   if ( this.status === "answered" ) {
     message += chalk.cyan( path.relative(this.opt.basePath, this.currentPath) );
   } else {
-    message += chalk.bold("\n Current directory: ") + this.opt.basePath + "/" + chalk.cyan(path.relative(this.opt.basePath, this.currentPath));
+    message += chalk.bold("\nDirectory: ") + this.opt.basePath + "/" + chalk.cyan(path.relative(this.opt.basePath, this.currentPath));
     var choicesStr = listRender(this.opt.choices, this.selected );
     message += "\n" + this.paginator.paginate(choicesStr, this.selected, this.opt.pageSize);
   }
@@ -220,6 +246,9 @@ Prompt.prototype.handleDrill = function () {
   this.currentPath = path.join(this.currentPath, choice.value);
   this.opt.choices = new Choices(this.createChoices(this.currentPath), this.answers);
   this.selected = 0;
+  if (this.depth > 0) {
+    this.selected = 1;
+  }
   this.render();
 };
 
@@ -301,14 +330,22 @@ function findIndex (term) {
  */
 Prompt.prototype.createChoices = function (basePath) {
   var choices = []
-  choices.push(CHOOSE);
   if (this.depth > 0) {
     choices.push(BACK);
   }
+  choices.push(CHOOSE);
   var directoryChoices = getDirectories(basePath);
-  if (directoryChoices.length > 0) {
+  var files = getFiles(basePath);
+  if (files.length + directoryChoices.length > 0) {
     choices.push(new Separator());
+  }
+  if (directoryChoices.length > 0) {
     choices = choices.concat(directoryChoices);
+  }
+  if (files.length > 0) {
+    choices = choices.concat(files.map(str => new Separator(str)));
+  }
+  if (files.length + directoryChoices.length > 0) {
     choices.push(new Separator());
   }
 
@@ -358,6 +395,20 @@ function getDirectories(basePath) {
       var isDir = stats.isDirectory();
       var isNotDotFile = path.basename(file).indexOf('.') !== 0;
       return isDir && isNotDotFile;
+    })
+    .sort();
+}
+function getFiles(basePath) {
+  return fs
+    .readdirSync(basePath)
+    .filter(function(file) {
+      var stats = fs.lstatSync(path.join(basePath, file));
+      if (stats.isSymbolicLink()) {
+        return false;
+      }
+      var isDir = stats.isDirectory();
+      var isNotDotFile = path.basename(file).indexOf('.') !== 0;
+      return !isDir && isNotDotFile;
     })
     .sort();
 }
