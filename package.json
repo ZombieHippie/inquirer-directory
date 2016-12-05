@@ -1,6 +1,6 @@
 {
   "name": "inquirer-directory-undergen",
-  "version": "2.1.1",
+  "version": "2.1.1-1",
   "description": "a directory (relative to given path) selector for Inquirer.js",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZombieHippie/inquierer-directory.git"
+    "url": "git+https://github.com/ZombieHippie/inquirer-directory.git"
   },
   "keywords": [
     "Inquirer",
@@ -20,9 +20,9 @@
   "author": "Nick Randall <nicksrandall@gmail.com> (http://nickrandall.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ZombieHippie/inquierer-directory/issues"
+    "url": "https://github.com/ZombieHippie/inquirer-directory/issues"
   },
-  "homepage": "https://github.com/ZombieHippie/inquierer-directory#readme",
+  "homepage": "https://github.com/ZombieHippie/inquirer-directory#readme",
   "dependencies": {
     "chalk": "^1.1.1",
     "cli-cursor": "^1.0.2",
