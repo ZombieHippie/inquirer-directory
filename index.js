@@ -25,8 +25,8 @@ module.exports = Prompt;
 /**
  * Constants
  */
-var CHOOSE = "choose this directory";
-var BACK = "go back a directory";
+var CHOOSE = ".";
+var BACK = "..";
 
 /**
  * Constructor
@@ -283,14 +283,14 @@ function findIndex (term) {
  * Helper to create new choices based on previous selection.
  */
 Prompt.prototype.createChoices = function (basePath) {
-  var choices = getDirectories(basePath);
-  if (choices.length > 0) {
-    choices.push(new Separator());
-  }
   choices.push(CHOOSE);
   if (this.depth > 0) {
     choices.push(new Separator());
     choices.push(BACK);
+    choices.push(new Separator());
+  }
+  var choices = getDirectories(basePath);
+  if (choices.length > 0) {
     choices.push(new Separator());
   }
   return choices;
