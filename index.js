@@ -45,6 +45,14 @@ function Prompt() {
 
   this.depth = 0;
   this.currentPath = path.isAbsolute(this.opt.startPath) ? path.resolve(this.opt.startPath) : path.resolve(process.cwd(), this.opt.startPath);
+  
+  var relativeStartPath = path.relative(this.currentPath, this.basePath);
+  this.depth = (relativeStartPath.match(/\.\.\//g) || {length: 0}).length;
+  
+  if (/[^\.\\\/]/.test(relativeStartPath)) {
+    throw new Error('basePath must contain startPath');
+  }
+  
   this.opt.choices = new Choices(this.createChoices(this.currentPath), this.answers);
   this.selected = 0;
 
